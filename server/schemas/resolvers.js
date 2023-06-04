@@ -7,14 +7,14 @@ const { signToken } = require("../utils/auth");
 const resolvers = {
   Query: {
     activeUser: async (_, args, context) => {
-      if (context) {
-        const userData = await User.findOne({ _id: context._id })
+      if (context.user) {
+        const userData = await User.findOne({ _id: context.user._id })
           .select("-_v -password")
-          .populate("books");
+        //   .populate("books");
         return userData;
-      } else {
+      } 
         throw new AuthenticationError("please log in");
-      }
+    
     },
   },
 
@@ -22,7 +22,7 @@ const resolvers = {
     createUser: async (_, args) => {
       const user = await User.create(args);
       const token = signToken(user);
-      return { user, token };
+      return { token, user };
     },
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email });
@@ -38,32 +38,34 @@ const resolvers = {
         );
       }
       const token = signToken(user);
-      return { user, token };
+      return { token, user };
     },
 
-    saveBook: async (_, args, context) => {
-      if (!context._id) {
-        throw new AuthenticationError("err");
-      }
-
+    saveBook: async (_, { bookdata }, context) => {
+      if (context.user) {
+        
       const addBooktoUser = await User.findByIdAndUpdate(
-        { _id: context._id },
-        { $addToSet: { savedBooks: args.input } },
+        { _id: context.user._id },
+        { $push: { savedBooks: bookdata } },
         { new: true }
       );
       return addBooktoUser;
+    }
+    throw new AuthenticationError("err");
     },
 
-    delBook: async (_,  args , context) => {
-      if (!context) {
-        throw new AuthenticationError("Login first!");
-      }
-      const delBookfromUser = await User.findByIdAndUpdate(
-        { _id: context._id },
-        { $pull: { savedBooks: { bookId: args.bookId } } }
-      );
-      return delBookfromUser;
-    },
+    delBook: async (_,  {bookId} , context) => {
+        if (context.user) {
+        
+            const delBookfromUser = await User.findOneAndUpdate(
+              { _id: context.user._id },
+              { $pull: { savedBooks: { bookId } } },
+              { new: true }
+            );
+            return delBookfromUser;
+          }
+          throw new AuthenticationError("err");
+        },
   },
 };
 
