@@ -16,7 +16,7 @@ import { removeBookId } from '../utils/localStorage';
 const SavedBooks = () => {
   const {loading, data} = useQuery(GET_USER)
 
-   const userData = data?.activeUser || {}
+  const userData = data?.activeUser || {savedBooks: null}
  
   const [deleteBook] = useMutation(DEL_BOOK)
 
