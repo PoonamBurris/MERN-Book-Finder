@@ -58,11 +58,11 @@ const resolvers = {
       if (!context) {
         throw new AuthenticationError("Login first!");
       }
-      const delBookFromUser = await User.findByIdAndUpdate(
+      const delBookfromUser = await User.findByIdAndUpdate(
         { _id: context._id },
         { $pull: { savedBooks: { bookId: args.bookId } } }
       );
-      return delBookFromUser;
+      return delBookfromUser;
     },
   },
 };
