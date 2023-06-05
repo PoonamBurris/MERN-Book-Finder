@@ -4,7 +4,8 @@ import {
   Card,
   Button,
   Row,
-  Col
+  Col,
+  Jumbotron
 } from 'react-bootstrap';
 
 import { useQuery, useMutation } from "@apollo/client";
@@ -16,7 +17,7 @@ import { removeBookId } from '../utils/localStorage';
 const SavedBooks = () => {
   const {loading, data} = useQuery(GET_USER)
 
-  const userData = data?.activeUser || {savedBooks: null}
+  const userData = data?.activeUser || {}
  
   const [deleteBook] = useMutation(DEL_BOOK)
 
@@ -46,11 +47,11 @@ const SavedBooks = () => {
 
   return (
     <>
-      <div fluid className='text-light bg-dark p-5'>
+      <Jumbotron fluid className='text-light bg-dark p-5'>
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
-      </div>
+      </Jumbotron>
       <Container>
         <h2 className='pt-5'>
           {userData.savedBooks.length
